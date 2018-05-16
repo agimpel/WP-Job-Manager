@@ -559,6 +559,7 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 			}
 
 			// Update the job
+			$values = apply_filters( 'submit_handler_add_filter', $values );
 			$this->save_job( $values['job']['job_title'], $values['job']['job_description'], $this->job_id ? '' : 'preview', $values );
 			$this->update_job_data( $values );
 
