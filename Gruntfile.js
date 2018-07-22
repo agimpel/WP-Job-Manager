@@ -1,5 +1,6 @@
-/* jshint node:true */
-module.exports = function( grunt ){
+/* eslint-disable */
+
+module.exports = function( grunt ) {
 	'use strict';
 
 	grunt.initConfig({
@@ -9,6 +10,7 @@ module.exports = function( grunt ){
 			fonts: 'assets/font',
 			images: 'assets/images',
 			js: 'assets/js',
+			blocks: 'assets/blocks',
 			build: 'tmp/build',
 			svn: 'tmp/release-svn'
 		},
@@ -16,7 +18,16 @@ module.exports = function( grunt ){
 		shell: {
 			buildMixtape: {
 				command: 'node_modules/.bin/mixtape build'
-			}
+			},
+			webpack: {
+				command: 'npm run build'
+			},
+			webpackDev: {
+				command: 'npm run dev'
+			},
+			testJS: {
+				command: 'npm run test'
+			},
 		},
 
 		// Compile all .less files.
@@ -74,16 +85,21 @@ module.exports = function( grunt ){
 			main: {
 				src: [
 					'**',
+					'!assets/js/**/*.js', 'assets/js/**/*.min.js', 'assets/js/jquery-fileupload/*.js', 'assets/js/jquery-deserialize/*.js',
+					'!assets/css/*.less',
 					'!*.log', // Log Files
-					'!node_modules/**', '!Gruntfile.js', '!package.json','!package-lock.json', // NPM/Grunt
+					'!assets/blocks/**', // Block source files
+					'!node_modules/**', '!Gruntfile.js', '!package.json', '!jest.config.json',
+					'!package-lock.json', '!webpack.config.js', // JS build/package files
 					'!.git/**', '!.github/**', // Git / Github
 					'!tests/**', '!bin/**', '!phpunit.xml', '!phpunit.xml.dist', // Unit Tests
 					'!vendor/**', '!composer.lock', '!composer.phar', '!composer.json', // Composer
 					'!.*', '!**/*~', '!tmp/**', //hidden/tmp files
+					'!*.code-workspace', // IDE files
 					'!docs/**',
 					'!CONTRIBUTING.md',
 					'!readme.md',
-					'!phpcs.ruleset.xml',
+					'!phpcs.xml.dist',
 					'!tools/**',
 					'!mixtape.json'
 				],
@@ -194,7 +210,8 @@ module.exports = function( grunt ){
 			'main': {
 				cwd: '<%= dirs.build %>/',
 				src: [ '<%= dirs.build %>/**' ],
-				dest: 'tmp/wp-job-manager.zip'
+				dest: 'tmp/wp-job-manager.zip',
+				compression: 'DEFLATE'
 			}
 		},
 
@@ -209,7 +226,7 @@ module.exports = function( grunt ){
 		},
 
 		clean: {
-			main: [ 'tmp/', 'lib/wpjm_rest' ], //Clean up build folder
+			main: [ 'tmp/*.zip', 'lib/wpjm_rest', '<%= dirs.build %>' ], //Clean up build folder
 		},
 
 		jshint: {
@@ -274,12 +291,17 @@ module.exports = function( grunt ){
 
 	grunt.registerTask( 'build-mixtape', [ 'shell:buildMixtape' ] );
 
-	grunt.registerTask( 'build', [ 'gitinfo', 'clean', 'check-mixtape', 'check-mixtape-fatal', 'test', 'copy' ] );
+	grunt.registerTask( 'build-blocks', [ 'shell:webpack' ] );
+	grunt.registerTask( 'build-blocks:dev', [ 'shell:webpackDev' ] );
+
+	grunt.registerTask( 'build', [ 'gitinfo', 'clean', 'check-mixtape', 'check-mixtape-fatal', 'test', 'build-blocks', 'copy' ] );
+	grunt.registerTask( 'build-unsafe', [ 'clean', 'check-mixtape', 'check-mixtape-fatal', 'build-blocks', 'copy' ] );
 
 	grunt.registerTask( 'deploy', [ 'checkbranch:master', 'checkrepo', 'build', 'wp_deploy' ] );
 	grunt.registerTask( 'deploy-unsafe', [ 'build', 'wp_deploy' ] );
 
 	grunt.registerTask( 'package', [ 'build', 'zip' ] );
+	grunt.registerTask( 'package-unsafe', [ 'build-unsafe', 'zip' ] );
 
 	// Register tasks
 	grunt.registerTask( 'default', [
@@ -295,6 +317,7 @@ module.exports = function( grunt ){
 	] );
 
 	grunt.registerTask( 'test', [
+		'shell:testJS',
 		'phpunit'
 	] );
 

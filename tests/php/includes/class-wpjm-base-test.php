@@ -13,7 +13,7 @@ class WPJM_BaseTest extends WP_UnitTestCase {
 
 	function setUp() {
 		parent::setUp();
-		include_once( WPJM_Unit_Tests_Bootstrap::instance()->includes_dir . '/class-requests-transport-faker.php' );
+		include_once WPJM_Unit_Tests_Bootstrap::instance()->includes_dir . '/class-requests-transport-faker.php';
 		$this->_transport = null;
 
 		$this->factory = self::factory();
@@ -58,28 +58,28 @@ class WPJM_BaseTest extends WP_UnitTestCase {
 	 * Helper to disable manage job listings capability.
 	 */
 	protected function disable_update_plugins_cap() {
-		remove_filter( 'user_has_cap', array( $this, 'add_manage_update_plugins_cap') );
+		remove_filter( 'user_has_cap', array( $this, 'add_manage_update_plugins_cap' ) );
 	}
 
 	/**
 	 * Helper to enable manage job listings capability.
 	 */
 	protected function enable_update_plugins_cap() {
-		add_filter( 'user_has_cap', array( $this, 'add_manage_update_plugins_cap') );
+		add_filter( 'user_has_cap', array( $this, 'add_manage_update_plugins_cap' ) );
 	}
 
 	/**
 	 * Helper to disable update plugins capability.
 	 */
 	protected function disable_manage_job_listings_cap() {
-		remove_filter( 'user_has_cap', array( $this, 'add_manage_job_listing_cap') );
+		remove_filter( 'user_has_cap', array( $this, 'add_manage_job_listing_cap' ) );
 	}
 
 	/**
 	 * Helper to enable update plugins capability.
 	 */
 	protected function enable_manage_job_listings_cap() {
-		add_filter( 'user_has_cap', array( $this, 'add_manage_job_listing_cap') );
+		add_filter( 'user_has_cap', array( $this, 'add_manage_job_listing_cap' ) );
 	}
 
 	/**
@@ -110,7 +110,7 @@ class WPJM_BaseTest extends WP_UnitTestCase {
 		add_filter( 'job_manager_geolocation_api_key', '__return_empty_string', 10 );
 	}
 
-	public function overload_request_transport(&$url, &$headers, &$data, &$type, &$options) {
+	public function overload_request_transport( &$url, &$headers, &$data, &$type, &$options ) {
 		$options['transport'] = $this->get_request_transport();
 	}
 
@@ -147,5 +147,19 @@ class WPJM_BaseTest extends WP_UnitTestCase {
 		$post = get_post( $post );
 		$this->assertNotEmpty( $post );
 		$this->assertNotEquals( $expected_post_type, $post->post_status );
+	}
+
+	protected function login_as_admin() {
+		$admin = get_user_by( 'email', 'wpjm_admin_user@example.com' );
+		if ( false === $admin ) {
+			$admin_id = wp_create_user(
+				'wpjm_admin_user',
+				'wpjm_admin_user',
+				'wpjm_admin_user@example.com'
+			);
+			$admin    = get_user_by( 'ID', $admin_id );
+			$admin->set_role( 'administrator' );
+		}
+		wp_set_current_user( $admin->ID );
 	}
 }
