@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WP Job Manager
+ * Plugin Name: WP Job Manager CHEMCONNECT VERSION
  * Plugin URI: https://wpjobmanager.com/
  * Description: Manage job listings from the WordPress admin panel, and allow users to post jobs directly to your site.
  * Version: 1.31.3
@@ -215,6 +215,9 @@ class WP_Job_Manager {
 		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/class-wp-job-manager-widget.php';
 		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/widgets/class-wp-job-manager-widget-recent-jobs.php';
 		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/widgets/class-wp-job-manager-widget-featured-jobs.php';
+		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/widgets/class-wp-job-manager-widget-chemtogether-jobs.php';
+		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/widgets/class-wp-job-manager-widget-industry-jobs.php';
+		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/widgets/class-wp-job-manager-widget-academia-jobs.php';
 	}
 
 	/**

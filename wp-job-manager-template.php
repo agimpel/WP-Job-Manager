@@ -181,6 +181,18 @@ function is_position_featured( $post = null ) {
 }
 
 /**
+ * Checks whether or not the position is present in the spotlight.
+ *
+ * @since 1.2.0
+ * @param  WP_Post|int $post
+ * @return boolean
+ */
+function is_position_spotlight( $post = null ) {
+	$post = get_post( $post );
+	return (bool) $post->_spotlight;
+}
+
+/**
  * Checks whether or not applications are allowed.
  *
  * @since 1.21.0

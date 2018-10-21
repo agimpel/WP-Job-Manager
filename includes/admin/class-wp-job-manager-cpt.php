@@ -371,6 +371,25 @@ class WP_Job_Manager_CPT {
 				),
 			)
 		);
+
+		// Filter by Spotlight.
+		$this->jobs_filter_dropdown(
+			'job_listing_spotlight',
+			array(
+				array(
+					'value' => '',
+					'text'  => __( 'Select Spotlight', 'wp-job-manager' ),
+				),
+				array(
+					'value' => '1',
+					'text'  => __( 'Spotlight', 'wp-job-manager' ),
+				),
+				array(
+					'value' => '0',
+					'text'  => __( 'Not Spotlight', 'wp-job-manager' ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -476,6 +495,7 @@ class WP_Job_Manager_CPT {
 		$columns['job_posted']           = __( 'Posted', 'wp-job-manager' );
 		$columns['job_expires']          = __( 'Expires', 'wp-job-manager' );
 		$columns['job_listing_category'] = __( 'Categories', 'wp-job-manager' );
+		$columns['spotlight']            = '<span class="tips" data-tip="' . __( '&diam;', 'wp-job-manager' ) . '">' . __( '&diam;', 'wp-job-manager' ) . '</span>';
 		$columns['featured_job']         = '<span class="tips" data-tip="' . __( 'Featured?', 'wp-job-manager' ) . '">' . __( 'Featured?', 'wp-job-manager' ) . '</span>';
 		$columns['filled']               = '<span class="tips" data-tip="' . __( 'Filled?', 'wp-job-manager' ) . '">' . __( 'Filled?', 'wp-job-manager' ) . '</span>';
 		$columns['job_actions']          = __( 'Actions', 'wp-job-manager' );
@@ -579,6 +599,13 @@ class WP_Job_Manager_CPT {
 				break;
 			case 'featured_job':
 				if ( is_position_featured( $post ) ) {
+					echo '&#10004;';
+				} else {
+					echo '&ndash;';
+				}
+				break;
+			case 'spotlight':
+				if ( is_position_spotlight( $post ) ) {
 					echo '&#10004;';
 				} else {
 					echo '&ndash;';
@@ -765,6 +792,14 @@ class WP_Job_Manager_CPT {
 			$meta_query[] = array(
 				'key'   => '_featured',
 				'value' => $_GET['job_listing_featured'],
+			);
+		}
+
+		// Filter on _spotlight meta.
+		if ( isset( $_GET['job_listing_spotlight'] ) && '' !== $_GET['job_listing_spotlight'] ) {
+			$meta_query[] = array(
+				'key'   => '_spotlight',
+				'value' => $_GET['job_listing_spotlight'],
 			);
 		}
 
